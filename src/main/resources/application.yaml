@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: LoginHomWork
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_homework_01
+    username: anishan
+    password: Han123456
+
+
+  data:
+    redis:
+      database: 0
