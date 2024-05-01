@@ -21,24 +21,28 @@ public class LoginServiceImpl implements LoginService {
 
 
     @Override
-    public String getValidationCode() {
-        UUID uuid = UUID.randomUUID();
+    public String getValidationCode(String sessionId) {
+        String key = "user:" + sessionId + ":code";
+        boolean hasKey = Boolean.TRUE.equals(stringRedisTemplate.opsForValue().getOperations().hasKey(key));
+
+        if (hasKey) {
+            return RestfulEntity.failMessage(406, "请勿重复请求验证码").toJson();
+        }
+
         SpecCaptcha captcha = new SpecCaptcha(130, 48);
-
-        CaptchaObject object = new CaptchaObject();
-        object.setImage(captcha.toBase64()).setUuid(uuid.toString());
-
-        stringRedisTemplate.opsForValue().set("user:" + uuid + ":code", captcha.text(), TIME_OUT, TimeUnit.SECONDS);
-
-        return RestfulEntity.successMessage("success", object).toJson();
+        stringRedisTemplate.opsForValue().set(key, captcha.text(), TIME_OUT, TimeUnit.SECONDS);
+        return RestfulEntity.successMessage("success", captcha.toBase64()).toJson();
     }
 
     @Override
-    public boolean validateCode(String uuid, String code) {
-        String s = stringRedisTemplate.opsForValue().get("user" + uuid + ":code");
+    public boolean validateCode(String sessionId, String code) {
+
+        String key = "user:" + sessionId + ":code";
+        String s = stringRedisTemplate.opsForValue().get(key);
         if (s == null || s.isEmpty()) {
             return false;
         }
+        stringRedisTemplate.delete(key);
         return s.equals(code);
     }
 }

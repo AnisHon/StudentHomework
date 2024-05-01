@@ -4,6 +4,7 @@ import com.anishan.service.LoginService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.Session;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
@@ -25,8 +26,8 @@ public class LoginController {
 
     @RequestMapping(value = {"/user/code"}, method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS})
     @ResponseBody
-    public String getCode() throws IOException {
-        return loginService.getValidationCode();
+    public String getCode(HttpSession session) throws IOException {
+        return loginService.getValidationCode(session.getId());
     }
 
 

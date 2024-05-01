@@ -10,13 +10,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -36,8 +42,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
         return http
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/user/code").permitAll();
                     auth.anyRequest().authenticated();
@@ -52,6 +58,20 @@ public class SecurityConfig {
 
                     login.permitAll();
                 })
+                .cors(cors -> {
+                    CorsConfiguration corsConfigurer = new CorsConfiguration();
+                    corsConfigurer.addAllowedOriginPattern("*");
+                    corsConfigurer.setAllowCredentials(true);
+                    corsConfigurer.addAllowedHeader("*");
+                    corsConfigurer.addAllowedMethod("*");
+                    corsConfigurer.addExposedHeader("*");
+                    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                    source.registerCorsConfiguration("/**", corsConfigurer);  //直接针对于所有地址生效
+                    cors.configurationSource(source);
+                })
+                .exceptionHandling(config -> {
+                    config.authenticationEntryPoint(this::failureHandler);
+                })
                 .csrf(CsrfConfigurer::disable)
                 .build();
     }
@@ -60,6 +80,7 @@ public class SecurityConfig {
                                HttpServletResponse response,
                                Authentication authentication)
             throws IOException, ServletException {
+
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
@@ -76,8 +97,14 @@ public class SecurityConfig {
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
+        int code = 404;
         PrintWriter writer = response.getWriter();
-        writer.write(RestfulEntity.failMessage(406, exception.getMessage()).toJson());
+
+        if (exception instanceof AuthenticationException authenticationException) {
+            code = 406;
+        }
+
+        writer.write(RestfulEntity.failMessage(code, exception.getMessage()).toJson());
 
     }
 
