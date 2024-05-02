@@ -26,6 +26,8 @@ public interface AccountMapper {
     @Update("update account set password = #{password} where email = #{email}")
     int updatePasswordByEmail(@Param("email") String email, @Param("password") String password);
 
+    @Delete("delete from account where id = #{id}")
+    int deleteAccountById(int id);
 
 
 }

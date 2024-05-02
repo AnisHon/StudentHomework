@@ -1,7 +1,8 @@
 mybatis:
   mapper-locations: classpath:com/anishan/mapper/*.xml
   type-aliases-package: com.anishan.entity
-
+  configuration:
+    auto-mapping-behavior: full
 spring:
   application:
     name: LoginHomWork

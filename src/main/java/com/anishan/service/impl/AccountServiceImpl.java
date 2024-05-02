@@ -1,7 +1,6 @@
 package com.anishan.service.impl;
 
 import com.anishan.entity.Account;
-import com.anishan.entity.Student;
 import com.anishan.mapper.AccountMapper;
 import com.anishan.service.AccountService;
 import jakarta.annotation.Resource;
@@ -17,16 +16,11 @@ public class AccountServiceImpl implements AccountService {
     @Resource
     AccountMapper accountMapper;
 
-    @Override
-    public void addStudent(Account account, Student student) {
-        addAccount(account);
-        int id = account.getId();
 
-
-    }
 
     @Override
     public void addAccount(Account account) {
+        account.setPassword(encoder.encode(account.getPassword()));
         accountMapper.insertAccount(account);
     }
 

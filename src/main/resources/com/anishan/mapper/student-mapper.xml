@@ -19,13 +19,62 @@
         select
             s.id as sid,
             s.name as sname,
-            gender, address,
+            age, gender, address,
             c.id as cid,
             c.name as cname
         from student s
         left join class c
             on s.class_id = c.id
         limit #{beg}, #{limit}
+    </select>
+
+<!--  映射Student所有成员  -->
+    <resultMap id="StudentMapping" type="student">
+        <id column="stu_id" property="id"/>
+        <result column="stu_name" property="name"/>
+        <association property="account">
+            <id column="account_id" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+        <association property="clazz">
+            <id column="class_id" property="id"/>
+            <result column="class_name" property="name"/>
+        </association>
+        <collection property="scores" ofType="score">
+            <id column="score_id" property="id"/>
+            <result column="score" property="score"/>
+            <association property="subject">
+                <id column="subject_id" property="id"/>
+                <result column="subject_name" property="name"/>
+            </association>
+        </collection>
+    </resultMap>
+<!--    Student selectStudentByUsername(String username);-->
+    <select id="selectStudentByUsername" resultMap="StudentMapping" >
+        select
+            a.id as account_id,
+            username,
+            s.id as stu_id,
+            s.name as stu_name,
+            gender, age, address,
+            c.id as class_id,
+            c.name as class_name,
+            sc.id as score_id,
+            sc.score as score,
+            su.id as subject_id,
+            su.name as subject_name
+
+        from account a
+        right join student s
+            on a.id = s.account_id
+        left join class c
+            on c.id = s.class_id
+        left join score sc
+            on sc.student_id = s.id
+        left join subject su
+            on sc.subject_id = su.id
+        where a.username = #{username}
+
     </select>
 
 </mapper>

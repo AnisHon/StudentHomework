@@ -27,12 +27,20 @@ public class LoginController {
     @Resource
     AccountService accountService;
 
+    /**
+     * 图形验证码
+     * @return 返回的是base64编码的验证码
+     */
     @RequestMapping(value = {"/user/code"}, method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS})
     @ResponseBody
     public String getCode(HttpSession session) {
         return loginService.getValidationCode(session.getId());
     }
 
+    /**
+     * 通过账号发送电子邮件验证码（可能没有设置账号导致发不出去）
+     * @param username 账号
+     */
     @ResponseBody
     @PostMapping("/user/send-reset-code")
     public String sendCode(
@@ -50,6 +58,12 @@ public class LoginController {
 
     }
 
+
+    /**
+     * 通过验证码检测，并设置密码
+     * @param password 新密码
+     * @param reqCode 验证码
+     */
     @ResponseBody
     @PostMapping("/user/reset-password")
     public String resetPassword(

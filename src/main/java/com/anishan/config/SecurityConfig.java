@@ -3,11 +3,8 @@ package com.anishan.config;
 import com.anishan.entity.RestfulEntity;
 import com.anishan.filter.VerifyCodeFilter;
 import jakarta.annotation.Resource;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,8 +24,6 @@ import java.io.PrintWriter;
 @Configuration
 public class SecurityConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
-
     @Resource
     VerifyCodeFilter filter;
 
@@ -43,7 +38,7 @@ public class SecurityConfig {
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/user/**").permitAll();
-                    auth.anyRequest().authenticated();
+                    auth.anyRequest().permitAll();
                 })
                 .formLogin(login -> {
                     login.loginProcessingUrl("/user/login");
@@ -66,9 +61,7 @@ public class SecurityConfig {
                     source.registerCorsConfiguration("/**", corsConfigurer);  //直接针对于所有地址生效
                     cors.configurationSource(source);
                 })
-                .exceptionHandling(config -> {
-                    config.authenticationEntryPoint(this::failureHandler);
-                })
+                .exceptionHandling(config -> config.authenticationEntryPoint(this::failureHandler))
                 .csrf(CsrfConfigurer::disable)
                 .build();
     }
@@ -76,7 +69,7 @@ public class SecurityConfig {
     public void successHandler(HttpServletRequest request,
                                HttpServletResponse response,
                                Authentication authentication)
-            throws IOException, ServletException {
+            throws IOException {
 
 
         response.setCharacterEncoding("UTF-8");

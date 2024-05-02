@@ -1,18 +1,87 @@
 package com.anishan.controller;
 
-import com.anishan.entity.RestfulEntity;
-import org.springframework.context.annotation.Configuration;
+import com.anishan.entity.*;
+import com.anishan.exception.ConfilictExcption;
+import com.anishan.service.StudentService;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 public class StudentController {
 
-    @RequestMapping("/student")
+    private final int PRE_PAGE_SIZE = 10;
+
+    @Resource
+    StudentService studentService;
+
+
+    /**
+     * 获得学生信息（student + class）
+     * @param page 页码
+     */
+    @GetMapping("/teacher/get/{page}")
     @ResponseBody
-    public String getStudent() {
-        return RestfulEntity.successMessage("Test", "Test").toJson();
+    public String getStudent(
+            @Min(value = 1, message = "页号从1开始")
+            @PathVariable
+            Integer page
+    ) {
+        List<Student> studentsInfo = studentService.getStudentsInfo(page, PRE_PAGE_SIZE);
+        return RestfulEntity.successMessage("success", studentsInfo).toJson();
     }
+
+    /**
+     * 添加学生，包括账号
+     * @param paramAccount
+     *      username 账号
+     *      password 密码（自动加密）
+     * @param paramStudent
+     *      name 名字
+     *      age 年龄（0-100）
+     *      gender 性别（男/女）
+     *      address地址
+     * @param classId 班级ID
+     * @return 错误信息JSON或成功信息
+     */
+    @ResponseBody
+    @PostMapping("/teacher/add-student")
+    public String addStudent(
+            @Valid ParamAccount paramAccount,
+            @Valid ParamStudent paramStudent,
+            @NotNull Integer classId
+    ) {
+        Account account = new Account(paramAccount);
+        Student student = new Student(paramStudent);
+
+        try {
+            boolean b = studentService.addStudent(account, student, classId);
+            if (b) {
+                return RestfulEntity.successMessage("success", "").toJson();
+            }
+        } catch (ConfilictExcption e) {
+            return RestfulEntity.failMessage(409, e.getMessage()).toJson();
+        }
+
+        return RestfulEntity.failMessage(400, "添加失败，未知错误").toJson();
+    }
+
+
+    /**
+     * 学生个人信息（所有）
+     */
+    @ResponseBody
+    @GetMapping("/student/me")
+    public String getMyStudentInfo(Authentication authentication) {
+        System.out.println(authentication.getName());
+        return RestfulEntity.successMessage("success", "").toJson();
+    }
+
 
 }
