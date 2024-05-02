@@ -5,13 +5,8 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class Student {
+public class Subject {
     private int id;
     private String name;
-    private Integer age;
-    private String gender;
-    private String address;
-    private Account account;
-    private Clazz clazz;
     private List<Score> scores;
 }

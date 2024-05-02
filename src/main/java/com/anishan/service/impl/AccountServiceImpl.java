@@ -19,6 +19,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void addStudent(Account account, Student student) {
+        addAccount(account);
+        int id = account.getId();
+
 
     }
 

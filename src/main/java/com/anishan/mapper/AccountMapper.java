@@ -10,6 +10,7 @@ public interface AccountMapper {
     Account selectAccountByUsername(String username);
 
     @Insert("insert into account(username, password, role) values(#{username}, #{password}, #{role})")
+    @SelectKey(statement = "select last_insert_id()", keyProperty = "id", resultType = int.class, before = false)
     void insertAccount(Account account);
 
     @Select("select count(*) from account where email = #{email}")
@@ -24,4 +25,7 @@ public interface AccountMapper {
 
     @Update("update account set password = #{password} where email = #{email}")
     int updatePasswordByEmail(@Param("email") String email, @Param("password") String password);
+
+
+
 }

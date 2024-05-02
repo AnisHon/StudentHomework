@@ -2,7 +2,7 @@ package com.anishan.service.impl;
 
 import com.anishan.mapper.AccountMapper;
 import com.anishan.service.EmailService;
-import com.anishan.tool.EmailCodeSender;
+import com.anishan.tool.EmailSender;
 import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class EmailServiceImpl implements EmailService {
 
     @Resource
-    EmailCodeSender codeSender;
+    EmailSender codeSender;
     @Resource
     StringRedisTemplate stringRedisTemplate;
     @Resource

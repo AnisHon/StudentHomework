@@ -10,11 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
-import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -93,16 +90,17 @@ public class SecurityConfig {
     public void failureHandler(HttpServletRequest request,
                                HttpServletResponse response,
                                Exception exception)
-            throws IOException, ServletException {
+            throws IOException {
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
         int code = 404;
         PrintWriter writer = response.getWriter();
 
-        if (exception instanceof AuthenticationException authenticationException) {
+        if (exception instanceof AuthenticationException) {
             code = 406;
         }
+
 
         writer.write(RestfulEntity.failMessage(code, exception.getMessage()).toJson());
 

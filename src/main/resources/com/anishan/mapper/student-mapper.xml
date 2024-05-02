@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.anishan.mapper.StudentMapper">
+
+    <resultMap id="StudentClassMapping" type="student">
+        <id column="sid" property="id"/>
+        <result column="sname" property="name"/>
+        <association property="clazz">
+            <id column="cid" property="id"/>
+            <result column="cname" property="name"/>
+        </association>
+    </resultMap>
+
+<!--    List<Student> selectLimitedStudents(@Param("beg") int beg, @Param("limit") int limit);-->
+    <select id="selectLimitedStudents" resultMap="StudentClassMapping">
+        select
+            s.id as sid,
+            s.name as sname,
+            gender, address,
+            c.id as cid,
+            c.name as cname
+        from student s
+        left join class c
+            on s.class_id = c.id
+        limit #{beg}, #{limit}
+    </select>
+
+</mapper>
