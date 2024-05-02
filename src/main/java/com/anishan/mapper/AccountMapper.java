@@ -1,10 +1,7 @@
 package com.anishan.mapper;
 
 import com.anishan.entity.Account;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.springframework.web.bind.annotation.Mapping;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface AccountMapper {
@@ -15,4 +12,16 @@ public interface AccountMapper {
     @Insert("insert into account(username, password, role) values(#{username}, #{password}, #{role})")
     void insertAccount(Account account);
 
+    @Select("select count(*) from account where email = #{email}")
+    int hasEmail(String email);
+
+    @Select("select email from account where username = #{username}")
+    String selectEmailByUsername(String username);
+
+    @Update("update account set password = #{password} where username = #{username}")
+    int updatePasswordByUsername(@Param("username") String username, @Param("password") String password);
+
+
+    @Update("update account set password = #{password} where email = #{email}")
+    int updatePasswordByEmail(@Param("email") String email, @Param("password") String password);
 }

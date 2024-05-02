@@ -4,6 +4,8 @@ import com.anishan.entity.Account;
 import com.anishan.entity.CaptchaObject;
 import com.anishan.entity.RestfulEntity;
 import com.anishan.mapper.AccountMapper;
+import com.anishan.service.EmailService;
+import com.anishan.tool.EmailCodeSender;
 import com.wf.captcha.SpecCaptcha;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -69,5 +71,23 @@ class StudentHomeworkTests {
     }
 
 
+    @Resource
+    EmailCodeSender emailCodeSender;
+    @Test
+    public void testEmailSender() {
+        emailCodeSender.sendCode("3137687133@qq.com", "测试", 6);
+    }
+
+
+    @Resource
+    EmailService emailService;
+    @Test
+    public void testEmailService() {
+        boolean b = emailService.sendEmailVerificationCode("3137687133@qq.com", "1", "测试");
+        String email = emailService.getEmail("1");
+        System.out.println(email);
+        System.out.println(b);
+        System.out.println(emailService.validateEmailVerificationCode("1", "vhA08w"));
+    }
 
 }
