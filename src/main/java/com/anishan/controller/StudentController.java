@@ -1,7 +1,7 @@
 package com.anishan.controller;
 
 import com.anishan.entity.*;
-import com.anishan.exception.ConfilictExcption;
+import com.anishan.exception.ConflictExcption;
 import com.anishan.service.StudentService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -23,18 +23,35 @@ public class StudentController {
 
 
     /**
-     * 获得学生信息（student + class）
+     * 获得多个学生信息（student + class）
      * @param page 页码
      */
-    @GetMapping("/teacher/get/{page}")
+    @GetMapping("/teacher/students/{page}")
     @ResponseBody
-    public String getStudent(
+    public String getStudents(
             @Min(value = 1, message = "页号从1开始")
             @PathVariable
             Integer page
     ) {
         List<Student> studentsInfo = studentService.getStudentsInfo(page, PRE_PAGE_SIZE);
         return RestfulEntity.successMessage("success", studentsInfo).toJson();
+    }
+
+    /**
+     * 查询单个学生信息
+     * @param id 学生ID
+     */
+    @GetMapping("/teacher/student/{id}")
+    @ResponseBody
+    public String getStudent(
+            @PathVariable
+            Integer id
+    ) {
+        Student student = studentService.getStudentById(id);
+        if (student == null) {
+            return RestfulEntity.failMessage(404, "ID不存在").toJson();
+        }
+        return RestfulEntity.successMessage("success", student).toJsonWithoutNull();
     }
 
     /**
@@ -51,7 +68,7 @@ public class StudentController {
      * @return 错误信息JSON或成功信息
      */
     @ResponseBody
-    @PostMapping("/teacher/add-student")
+    @PostMapping("/admin/add-student")
     public String addStudent(
             @Valid ParamAccount paramAccount,
             @Valid ParamStudent paramStudent,
@@ -65,7 +82,7 @@ public class StudentController {
             if (b) {
                 return RestfulEntity.successMessage("success", "").toJson();
             }
-        } catch (ConfilictExcption e) {
+        } catch (ConflictExcption e) {
             return RestfulEntity.failMessage(409, e.getMessage()).toJson();
         }
 
@@ -74,14 +91,17 @@ public class StudentController {
 
 
     /**
-     * 学生个人信息（所有）
+     * 获得学生个人信息（所有）
      */
     @ResponseBody
     @GetMapping("/student/me")
     public String getMyStudentInfo(Authentication authentication) {
-        System.out.println(authentication.getName());
-        return RestfulEntity.successMessage("success", "").toJson();
+        String username = authentication.getName();
+        Student student = studentService.getStudentByUsername(username);
+        System.out.println(student);
+        return RestfulEntity.successMessage("success", student).toJson();
     }
+
 
 
 }

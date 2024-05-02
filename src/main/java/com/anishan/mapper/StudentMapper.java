@@ -8,6 +8,9 @@ import java.util.List;
 @Mapper
 public interface StudentMapper {
 
+    /**
+     * 分页查询非详细信息，只有class + student
+     */
     List<Student> selectLimitedStudents(@Param("beg") int beg, @Param("limit") int limit);
 
     @Insert("insert into student(name, gender, age, address, account_id, class_id) values(#{name}, #{gender}, #{age}, #{address}, #{account.id}, #{clazz.id})")
@@ -16,9 +19,20 @@ public interface StudentMapper {
     @Select("select account_id from student where id = #{studentId}")
     Integer selectAccountIdByStudentId(int studentId);
 
+    /**
+     * 删除学生
+     */
     @Delete("delete from student where id = #{id}")
     int deleteStudentById(int id);
 
+    /**
+     * 所有学生信息通过account username
+     */
     Student selectStudentByUsername(String username);
+
+    /**
+     * 所有学生信息通过student id
+     */
+    Student selectStudentById(int id);
 
 }

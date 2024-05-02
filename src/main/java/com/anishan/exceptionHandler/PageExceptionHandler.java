@@ -18,7 +18,21 @@ public class PageExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
     public String handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
-        return RestfulEntity.failMessage(HttpStatus.BAD_REQUEST.value(), ex.getMessage()).toJson();
+        return RestfulEntity
+                .failMessage(
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage()
+                ).toJson();
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseBody
+    public String handleMethodArgumentNotValidException(MethodArgumentTypeMismatchException ex) {
+        return RestfulEntity
+                .failMessage(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "错误请求：" + ex.getPropertyName() + "不匹配"
+                ).toJson();
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
@@ -41,8 +55,11 @@ public class PageExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public String handleException(Exception ex) {
+        System.out.println(ex.getClass().getName());
         return RestfulEntity.failMessage(500, ex.getMessage()).toJson();
     }
+
+
 
 }
 

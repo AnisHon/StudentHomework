@@ -3,7 +3,7 @@ package com.anishan.service.impl;
 import com.anishan.entity.Account;
 import com.anishan.entity.Clazz;
 import com.anishan.entity.Student;
-import com.anishan.exception.ConfilictExcption;
+import com.anishan.exception.ConflictExcption;
 import com.anishan.mapper.AccountMapper;
 import com.anishan.mapper.StudentMapper;
 import com.anishan.service.AccountService;
@@ -36,7 +36,7 @@ public class StudentServiceImpl implements StudentService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean addStudent(Account account, Student student, int classId) throws ConfilictExcption {
+    public boolean addStudent(Account account, Student student, int classId) throws ConflictExcption {
         account.setRole("student");
         student.
                 setAccount(account).
@@ -46,17 +46,17 @@ public class StudentServiceImpl implements StudentService {
         try {
             accountService.addAccount(account);
         } catch (DuplicateKeyException e) {
-            ConfilictExcption confilictExcption = new ConfilictExcption("账号："+ account.getUsername() + "冲突");
-            confilictExcption.initCause(e);
-            throw confilictExcption;
+            ConflictExcption conflictExcption = new ConflictExcption("账号："+ account.getUsername() + "冲突");
+            conflictExcption.initCause(e);
+            throw conflictExcption;
         }
 
         try {
             i = studentMapper.insertStudent(student);
         } catch (Exception e) {
-            ConfilictExcption confilictExcption = new ConfilictExcption("班级ID："+ classId + "不存在");
-            confilictExcption.initCause(e);
-            throw confilictExcption;
+            ConflictExcption conflictExcption = new ConflictExcption("班级ID："+ classId + "不存在");
+            conflictExcption.initCause(e);
+            throw conflictExcption;
         }
 
         return i >= 1;
@@ -73,7 +73,11 @@ public class StudentServiceImpl implements StudentService {
         return studentMapper.selectLimitedStudents((page - 1) * limitPrePage, limitPrePage);
     }
 
-
+    /**
+     * 删除学生（自动集联删除）
+     * @param studentId 学生ID
+     * @return 返回是否能删除
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteStudent(int studentId) {
@@ -82,6 +86,26 @@ public class StudentServiceImpl implements StudentService {
         int i = studentMapper.deleteStudentById(studentId);
         int j = accountMapper.deleteAccountById(accountId);
         return i >= 0 && j >= 0;
+    }
+
+    /**
+     * 通过username获取所有学生信息（包括成绩）
+     * @param username 账号
+     * @return 返回student对象
+     */
+    @Override
+    public Student getStudentByUsername(String username) {
+        return studentMapper.selectStudentByUsername(username);
+    }
+
+    /**
+     * 通过student id获取所有学生信息（包括成绩）
+     * @param studentId 账号
+     * @return 返回student对象
+     */
+    @Override
+    public Student getStudentById(int studentId) {
+        return studentMapper.selectStudentById(studentId);
     }
 
 

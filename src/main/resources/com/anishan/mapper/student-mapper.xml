@@ -54,8 +54,8 @@
         select
             a.id as account_id,
             username,
-            s.id as stu_id,
-            s.name as stu_name,
+            stu.id as stu_id,
+            stu.name as stu_name,
             gender, age, address,
             c.id as class_id,
             c.name as class_name,
@@ -65,16 +65,43 @@
             su.name as subject_name
 
         from account a
-        right join student s
-            on a.id = s.account_id
+        right join student stu
+            on a.id = stu.account_id
         left join class c
-            on c.id = s.class_id
+            on c.id = stu.class_id
         left join score sc
-            on sc.student_id = s.id
+            on sc.student_id = stu.id
         left join subject su
             on sc.subject_id = su.id
         where a.username = #{username}
 
     </select>
 
+<!--    Student selectStudentById(int id);-->
+    <select id="selectStudentById" resultMap="StudentMapping" >
+        select
+            a.id as account_id,
+            username,
+            stu.id as stu_id,
+            stu.name as stu_name,
+            gender, age, address,
+            c.id as class_id,
+            c.name as class_name,
+            sc.id as score_id,
+            sc.score as score,
+            su.id as subject_id,
+            su.name as subject_name
+
+        from account a
+                 right join student stu
+                            on a.id = stu.account_id
+                 left join class c
+                           on c.id = stu.class_id
+                 left join score sc
+                           on sc.student_id = stu.id
+                 left join subject su
+                           on sc.subject_id = su.id
+        where stu.id = #{id}
+
+    </select>
 </mapper>

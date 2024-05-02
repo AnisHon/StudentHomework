@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.anishan.mapper.ScoreMapper">
+
+    <resultMap id="ScoreMapping" type="score">
+        <id column="score_id" property="id"/>
+        <result column="score" property="score"/>
+        <association property="student">
+            <id column="student_id" property="id"/>
+            <result column="student_name" property="name"/>
+        </association>
+        <association property="subject">
+            <id column="subject_id" property="id"/>
+            <result column="subject_name" property="name"/>
+        </association>
+
+    </resultMap>
+
+<!--    List<Score> selectLimitedScores(int begin, int limit);-->
+    <select id="selectLimitedScores" resultMap="ScoreMapping">
+        select
+            stu.id as student_id,
+            stu.name as student_name,
+            ac.username as username,
+            sub.id as subject_id,
+            sub.name as subject_name,
+            sc.id as score_id,
+            sc.score as score
+        from score sc
+        left join student stu
+            on stu.id = sc.student_id
+        left join subject sub
+            on sub.id = sc.subject_id
+        left join account ac
+            on ac.id = stu.account_id
+        limit #{begin}, #{limit}
+
+    </select>
+
+</mapper>
