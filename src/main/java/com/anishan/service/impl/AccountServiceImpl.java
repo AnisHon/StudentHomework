@@ -6,6 +6,7 @@ import com.anishan.service.AccountService;
 import jakarta.annotation.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -19,6 +20,7 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addAccount(Account account) {
         account.setPassword(encoder.encode(account.getPassword()));
         accountMapper.insertAccount(account);
@@ -36,6 +38,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean changePasswordByEmail(String email, String newPassword) {
         int i = accountMapper.updatePasswordByEmail(email, encoder.encode(newPassword));
         return i >= 1;

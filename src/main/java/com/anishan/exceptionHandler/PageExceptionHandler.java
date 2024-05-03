@@ -7,33 +7,43 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.stream.Collectors;
 
+@RestController
 @ControllerAdvice
 public class PageExceptionHandler {
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseBody
-    public String handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
-        return RestfulEntity
-                .failMessage(
-                        HttpStatus.BAD_REQUEST.value(),
-                        ex.getMessage()
-                ).toJson();
-    }
-
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseBody
-    public String handleMethodArgumentNotValidException(MethodArgumentTypeMismatchException ex) {
+    public String handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+
         return RestfulEntity
                 .failMessage(
                         HttpStatus.BAD_REQUEST.value(),
                         "错误请求：" + ex.getPropertyName() + "不匹配"
                 ).toJson();
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseBody
+    public String handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        String message = ex
+                .getAllErrors()
+                .stream()
+                .map(MessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(" "));
+        return RestfulEntity
+                .failMessage(
+                        HttpStatus.BAD_REQUEST.value(),
+                        message
+                ).toJson();
+    }
+
+
 
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseBody
@@ -58,6 +68,8 @@ public class PageExceptionHandler {
         System.out.println(ex.getClass().getName());
         return RestfulEntity.failMessage(500, ex.getMessage()).toJson();
     }
+
+
 
 
 

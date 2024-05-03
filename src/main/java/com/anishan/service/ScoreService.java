@@ -27,4 +27,6 @@ public interface ScoreService {
      */
     boolean addScore(Score score) throws ConflictExcption;
 
+
+    boolean removeScore(int id);
 }

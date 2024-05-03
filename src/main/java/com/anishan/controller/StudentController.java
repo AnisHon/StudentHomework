@@ -1,7 +1,6 @@
 package com.anishan.controller;
 
 import com.anishan.entity.*;
-import com.anishan.exception.ConflictExcption;
 import com.anishan.service.StudentService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -48,10 +47,9 @@ public class StudentController {
             Integer id
     ) {
         Student student = studentService.getStudentById(id);
-        if (student == null) {
-            return RestfulEntity.failMessage(404, "ID不存在").toJson();
-        }
-        return RestfulEntity.successMessage("success", student).toJsonWithoutNull();
+
+        boolean b = student == null;
+        return RestfulEntity.boolMessage(b, "success", student, 404, "ID不存在").toJson();
     }
 
     /**
@@ -63,7 +61,7 @@ public class StudentController {
      *      name 名字
      *      age 年龄（0-100）
      *      gender 性别（男/女）
-     *      address地址
+     *      address 地址
      * @param classId 班级ID
      * @return 错误信息JSON或成功信息
      */
@@ -77,18 +75,27 @@ public class StudentController {
         Account account = new Account(paramAccount);
         Student student = new Student(paramStudent);
 
-        try {
-            boolean b = studentService.addStudent(account, student, classId);
-            if (b) {
-                return RestfulEntity.successMessage("success", "").toJson();
-            }
-        } catch (ConflictExcption e) {
-            return RestfulEntity.failMessage(409, e.getMessage()).toJson();
-        }
-
-        return RestfulEntity.failMessage(400, "添加失败，未知错误").toJson();
+        return studentService.addPersonnelControllerTool(account, student, classId);
+//        try {
+//            boolean b = studentService.addStudent(account, student, classId);
+//            if (b) {
+//                return RestfulEntity.successMessage("success", "").toJson();
+//            }
+//        } catch (ConflictExcption e) {
+//            return RestfulEntity.failMessage(409, e.getMessage()).toJson();
+//        }
+//
+//        return RestfulEntity.failMessage(400, "添加失败，未知错误").toJson();
     }
 
+
+    @ResponseBody
+    @GetMapping("/admin/delete-student/{id}")
+    public String deleteStudent(@PathVariable Integer id) {
+        boolean b = studentService.deleteStudent(id);
+        return RestfulEntity.boolMessage(b, "success", 404, "ID不存在").toJson();
+
+    }
 
     /**
      * 获得学生个人信息（所有）
@@ -101,7 +108,4 @@ public class StudentController {
         System.out.println(student);
         return RestfulEntity.successMessage("success", student).toJson();
     }
-
-
-
 }

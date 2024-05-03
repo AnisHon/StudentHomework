@@ -52,9 +52,10 @@ public class LoginController {
         }
 
         boolean isSent = emailService.sendEmailVerificationCode(email, session.getId(), "重置密码");
-        return isSent ?
-                RestfulEntity.successMessage("success", "").toJson() :
-                RestfulEntity.failMessage(400, "请不要多次发送验证码").toJson();
+        return RestfulEntity.boolMessage(
+                isSent,
+                "success",
+                400, "请不要多次发送验证码").toJson();
 
     }
 

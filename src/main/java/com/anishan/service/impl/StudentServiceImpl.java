@@ -25,7 +25,6 @@ public class StudentServiceImpl implements StudentService {
     @Resource
     AccountService accountService;
 
-
     /**
      * 添加一个学生并且添加一个account
      * @param account 学生账户不需要设置role和id
@@ -83,9 +82,9 @@ public class StudentServiceImpl implements StudentService {
     public boolean deleteStudent(int studentId) {
         Integer accountId = studentMapper.selectAccountIdByStudentId(studentId);
         if (accountId == null) return false;
-        int i = studentMapper.deleteStudentById(studentId);
+//        int i = studentMapper.deleteStudentById(studentId);
         int j = accountMapper.deleteAccountById(accountId);
-        return i >= 0 && j >= 0;
+        return j >= 0;
     }
 
     /**

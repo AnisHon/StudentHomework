@@ -7,7 +7,13 @@ import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
 
-public interface StudentService {
+public interface StudentService extends HumanResourceService<Student>{
+
+    @Override
+    default boolean addPersonnel(Account account, Student student, Object ...objects) throws ConflictExcption {
+        return addStudent(account, student, (Integer) objects[0]);
+    }
+
     /**
      * 添加一个学生并且添加一个account
      * @param account 学生账户不需要设置role和id
@@ -16,6 +22,7 @@ public interface StudentService {
      * @return 是否插入成功
      * @throws DuplicateKeyException 防止有唯一键冲突
      */
+
     boolean addStudent(Account account, Student student, int classId) throws ConflictExcption;
     /**
      * 分页查询且只查询学生信息（只有student表和class表）

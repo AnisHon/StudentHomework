@@ -36,4 +36,24 @@ public class RestfulEntity<T> {
     public String toJsonWithoutNull() {
         return JSON.toJSONString(this);
     }
+
+    public static RestfulEntity<?> boolMessage(boolean b, String successMessage,int code, String failMessage) {
+        RestfulEntity<?> entity;
+        if (b) {
+            entity = plainSuccessMessage(successMessage);
+        } else {
+            entity = failMessage(code, failMessage);
+        }
+        return entity;
+    }
+
+    public static <T> RestfulEntity<?> boolMessage(boolean b, String successMessage, T data,int code, String failMessage) {
+        RestfulEntity<?> entity;
+        if (b) {
+            entity = successMessage(successMessage, data);
+        } else {
+            entity = failMessage(code, failMessage);
+        }
+        return entity;
+    }
 }
