@@ -4,10 +4,10 @@ import com.anishan.entity.Clazz;
 import com.anishan.entity.Subject;
 import com.anishan.mapper.ClassMapper;
 import com.anishan.mapper.SubjectMapper;
-import com.anishan.mapper.TeacherMapper;
 import com.anishan.service.ResourceAssignmentService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,20 +28,24 @@ public class ResourceAssignmentServiceImpl implements ResourceAssignmentService 
     }
 
     @Override
-    public List<Clazz> selectLimitedClass(int page) {
+    public List<Clazz> selectLimitedClass(int page, String search) {
         int index = calculateIndex(page);
-        return classMapper.selectLimitedClass(index, PRE_PAGE_SIZE);
-
+        return search == null ?
+                classMapper.selectLimitedClass(index, PRE_PAGE_SIZE) :
+                classMapper.selectLimitedClassNameLikeSearch(index, PRE_PAGE_SIZE, search);
     }
 
+    @Transactional
     @Override
     public boolean insertClass(String name) {
         int i = classMapper.insertClass(name);
         return isChanged(i);
     }
 
+    @Transactional
     @Override
     public boolean updateClass(Clazz clazz) {
+
         int i = classMapper.updateClass(clazz);
         return isChanged(i);
     }
@@ -53,9 +57,11 @@ public class ResourceAssignmentServiceImpl implements ResourceAssignmentService 
     }
 
     @Override
-    public List<Subject> selectLimitedSubject(int page) {
+    public List<Subject> selectLimitedSubject(int page, String search) {
         int index = calculateIndex(page);
-        return subjectMapper.selectLimitedSubject(index, PRE_PAGE_SIZE);
+        return search == null ?
+                subjectMapper.selectLimitedSubject(index, PRE_PAGE_SIZE) :
+                subjectMapper.selectLimitedSubjectNameLikeSearch(index, PRE_PAGE_SIZE, search);
     }
 
     @Override
@@ -74,5 +80,10 @@ public class ResourceAssignmentServiceImpl implements ResourceAssignmentService 
     public boolean deleteSubjectById(int id) {
         int i = subjectMapper.deleteSubjectById(id);
         return isChanged(i);
+    }
+
+    @Override
+    public List<Subject> selectSubjectsByName(String subjectName) {
+        return subjectMapper.selectSubjectNameLikeSearch(subjectName);
     }
 }

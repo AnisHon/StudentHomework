@@ -26,11 +26,13 @@ public interface StudentService extends HumanResourceService<Student>{
     boolean addStudent(Account account, Student student, int classId) throws ConflictExcption;
     /**
      * 分页查询且只查询学生信息（只有student表和class表）
-     * @param page 页码
+     *
+     * @param page         页码
      * @param limitPrePage 每页个数
+     * @param search       模糊匹配字符
      * @return 返回学生信息
      */
-    List<Student> getStudentsInfo(int page, int limitPrePage);
+    List<Student> getStudentsInfo(int page, int limitPrePage, String search);
 
     /**
      * 删除学生（自动集联删除）

@@ -4,9 +4,14 @@ import com.anishan.entity.*;
 import com.anishan.service.TeacherService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 @Controller
 public class TeacherController {
@@ -24,16 +29,19 @@ public class TeacherController {
         Teacher teacher = new Teacher(paramTeacher);
 
         return teacherService.addPersonnelControllerTool(account, teacher);
-//        try {
-//            boolean b = teacherService.addTeacher(account, teacher);
-//            if (b) {
-//                return RestfulEntity.successMessage("success", "").toJson();
-//            }
-//        } catch (ConflictExcption e) {
-//            return RestfulEntity.failMessage(409, e.getMessage()).toJson();
-//        }
-//
-//        return RestfulEntity.failMessage(400, "添加失败，未知错误").toJson();
     }
+
+    @ResponseBody
+    @GetMapping("/admin/teachers/{page}")
+    public String getStudents(
+            @Min(value = 1, message = "页号从1开始")
+            @PathVariable
+            Integer page,
+            String search
+    ) {
+        List<Teacher> teachers = teacherService.getPagedTeacherInfo(page, search);
+        return RestfulEntity.successMessage("success", teachers).toJsonWithoutNull();
+    }
+
 
 }

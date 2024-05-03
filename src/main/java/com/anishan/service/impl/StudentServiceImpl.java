@@ -63,13 +63,19 @@ public class StudentServiceImpl implements StudentService {
 
     /**
      * 分页查询且只查询学生信息（只有student表和class表）
-     * @param page 页码
+     *
+     * @param page         页码
      * @param limitPrePage 每页个数
+     * @param search       模糊匹配
      * @return 返回学生信息
      */
     @Override
-    public List<Student> getStudentsInfo(int page, int limitPrePage) {
-        return studentMapper.selectLimitedStudents((page - 1) * limitPrePage, limitPrePage);
+    public List<Student> getStudentsInfo(int page, int limitPrePage, String search) {
+        int index = (page - 1) * limitPrePage;
+
+        return search == null ?
+                studentMapper.selectLimitedStudents(index, limitPrePage) :
+                studentMapper.selectLimitedStudentsWithCondition(index, limitPrePage, search);
     }
 
     /**

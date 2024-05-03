@@ -56,4 +56,9 @@ public class RestfulEntity<T> {
         }
         return entity;
     }
+
+    public static RestfulEntity<?> boolMessage(boolean b) {
+        return boolMessage(b, "success", 400, "fail");
+    }
+
 }

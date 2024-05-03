@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ResourceAssignmentService {
 
-    List<Clazz> selectLimitedClass(int page);
+    List<Clazz> selectLimitedClass(int page, String search);
 
     boolean insertClass(String name);
 
@@ -15,7 +15,7 @@ public interface ResourceAssignmentService {
 
     boolean removeClass(int id);
 
-    List<Subject> selectLimitedSubject(int page);
+    List<Subject> selectLimitedSubject(int page, String search);
 
     boolean updateSubject(Subject subject);
 
@@ -23,4 +23,5 @@ public interface ResourceAssignmentService {
 
     boolean deleteSubjectById(int id);
 
+    List<Subject> selectSubjectsByName(String subjectName);
 }

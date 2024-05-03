@@ -79,9 +79,8 @@ public class LoginController {
         if (!b) {
             return RestfulEntity.failMessage(401, "验证码错误").toJson();
         }
-        accountService.changePasswordByEmail(email ,password);
-        return RestfulEntity.successMessage("success", "").toJson();
-
+        b = accountService.changePasswordByEmail(email ,password);
+        return RestfulEntity.boolMessage(b, "success", 400, "出现错误未更改").toJson();
     }
 
 }

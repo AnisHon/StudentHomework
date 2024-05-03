@@ -26,9 +26,11 @@ public class ScoreController {
     public String getScores(
             @Min(value = 1, message = "页码不能小于1")
             @PathVariable
-            Integer page
+            Integer page,
+            Integer order,
+            String search
     ) {
-        List<Score> pagedScore = scoreService.getPagedScore(page);
+        List<Score> pagedScore = scoreService.getPagedScore(page, search, order);
         return RestfulEntity.successMessage("success", pagedScore).toJsonWithoutNull();
     }
 

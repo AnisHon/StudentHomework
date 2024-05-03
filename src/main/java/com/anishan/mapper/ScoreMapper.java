@@ -8,7 +8,26 @@ import java.util.List;
 @Mapper
 public interface ScoreMapper {
 
+    int ASCENDING = 0;
+    int DESENDING = 1;
+
+    /**
+     * 包括
+     * student id
+     * student name
+     * account username
+     * subject id
+     * subject name
+     * score id
+     * score->score
+     */
     List<Score> selectLimitedScores(@Param("begin") int begin, @Param("limit") int limit);
+
+    List<Score> selectLimitedScoresWithCondidtion(@Param("begin") int begin,
+                                                  @Param("limit") int limit,
+                                                  @Param("order") int order,
+                                                  @Param("search") String search
+    );
 
     @Insert("insert into score(student_id, subject_id, score) values(#{student.id}, #{subject.id}, #{score})")
     int insertScore(Score score);

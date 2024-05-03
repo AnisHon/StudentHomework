@@ -104,4 +104,26 @@
         where stu.id = #{id}
 
     </select>
+
+<!--    List<Student> selectLimitedStudentsWithCondition(@Param("beg") int beg, @Param("limit") int limit, String search);-->
+    <select id="selectLimitedStudentsWithCondition" resultMap="StudentClassMapping" >
+        select
+            s.id as sid,
+            s.name as sname,
+            age, gender, address,
+            c.id as cid,
+            c.name as cname
+        from student s
+        left join class c
+            on s.class_id = c.id
+        left join account a
+            on a.id = s.account_id
+        where
+            s.name like concat('%', #{search}, '%')
+           or
+            a.username like concat('%', #{search}, '%')
+        limit #{beg}, #{limit}
+
+    </select>
+
 </mapper>

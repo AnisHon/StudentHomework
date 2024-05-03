@@ -13,6 +13,7 @@ import java.util.List;
 
 @Service
 public class ScoreServiceImpl implements ScoreService {
+
     private final int PRE_PAGE_SIZE = 10;
     @Resource
     ScoreMapper scoreMapper;
@@ -22,12 +23,18 @@ public class ScoreServiceImpl implements ScoreService {
      * 参数千万不能小于等于0
      * 参数千万不能小于等于0
      * 参数千万不能小于等于0
-     * @param page 当前页码
+     *
+     * @param page  当前页码
+     * @param search
+     * @param order
      */
     @Override
-    public List<Score> getPagedScore(int page) {
+    public List<Score> getPagedScore(int page, String search, Integer order) {
         int index = (page - 1) * PRE_PAGE_SIZE;
-        return scoreMapper.selectLimitedScores(index, PRE_PAGE_SIZE);
+        if (order == null) {
+            order = ScoreMapper.ASCENDING;
+        }
+        return scoreMapper.selectLimitedScoresWithCondidtion(index, PRE_PAGE_SIZE, order, search);
     }
 
     /**

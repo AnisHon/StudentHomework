@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.anishan.mapper.TeacherMapper">
+<!--    List<Teacher> selectLimitedTeacherLikeSearch(@Param("begin") int begin, @Param("limit") int limit, @Param("search") String search);-->
+    <select id="selectLimitedTeacherLikeSearch" resultType="teacher">
+        select
+            t.id as id,
+            name, gender
+        from teacher t
+        left join account a
+            on a.id = t.account_id
+        where
+            t.name like concat('%', #{search}, '%')
+        or
+            a.username like concat('%', #{search}, '%')
+        limit #{begin}, #{limit}
+    </select>
+
+</mapper>

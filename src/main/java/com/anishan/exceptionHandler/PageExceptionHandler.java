@@ -3,6 +3,7 @@ package com.anishan.exceptionHandler;
 import com.anishan.entity.RestfulEntity;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,6 +13,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @RestController
@@ -62,12 +64,20 @@ public class PageExceptionHandler {
         return RestfulEntity.failMessage(400, message).toJson();
     }
 
-    @ExceptionHandler(Exception.class)
     @ResponseBody
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public String handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
+        return RestfulEntity.failMessage(405, "错误求求方法" + ex.getMethod() + "仅支持" + Arrays.toString(ex.getSupportedMethods())).toJson();
+    }
+
+    @ResponseBody
+    @ExceptionHandler(Exception.class)
     public String handleException(Exception ex) {
         System.out.println(ex.getClass().getName());
+        ex.printStackTrace();
         return RestfulEntity.failMessage(500, ex.getMessage()).toJson();
     }
+
 
 
 

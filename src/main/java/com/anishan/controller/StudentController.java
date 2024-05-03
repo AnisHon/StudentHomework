@@ -30,10 +30,12 @@ public class StudentController {
     public String getStudents(
             @Min(value = 1, message = "页号从1开始")
             @PathVariable
-            Integer page
+            Integer page,
+            String search
     ) {
-        List<Student> studentsInfo = studentService.getStudentsInfo(page, PRE_PAGE_SIZE);
-        return RestfulEntity.successMessage("success", studentsInfo).toJson();
+
+        List<Student> studentsInfo = studentService.getStudentsInfo(page, PRE_PAGE_SIZE, search);
+        return RestfulEntity.successMessage("success", studentsInfo).toJsonWithoutNull();
     }
 
     /**

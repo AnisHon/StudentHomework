@@ -20,4 +20,10 @@ public interface SubjectMapper {
     @Delete("delete from subject where id = #{id}")
     int deleteSubjectById(int id);
 
+    @Select("select * from subject where name like concat('%', #{search}, '%') limit #{begin}, #{limit}")
+    List<Subject> selectLimitedSubjectNameLikeSearch(int begin, int limit, String search);
+
+    @Select("select * from subject where name like concat('%', #{search}, '%')")
+    List<Subject> selectSubjectNameLikeSearch(String search);
+
 }

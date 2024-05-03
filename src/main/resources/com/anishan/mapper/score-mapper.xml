@@ -40,4 +40,43 @@
 
     </select>
 
+<!--    List<Score> selectLimitedScoresWithCondidtion(@Param("begin") int begin, @Param("limit") int limit,-->
+<!--    @Param("order") int order,-->
+<!--    @Param("search") int search-->
+<!--    );-->
+
+    <select id="selectLimitedScoresWithCondidtion" resultMap="ScoreMapping">
+        select
+            stu.id as student_id,
+            stu.name as student_name,
+            ac.username as username,
+            sub.id as subject_id,
+            sub.name as subject_name,
+            sc.id as score_id,
+            sc.score as score
+        from score sc
+                 left join student stu
+                           on stu.id = sc.student_id
+                 left join subject sub
+                           on sub.id = sc.subject_id
+                 left join account ac
+                           on ac.id = stu.account_id
+
+        <where>
+            <if test="search != null">
+                ac.username like concat('%', #{search}, '%')
+                or
+                stu.name like concat('%', #{search}, '%')
+            </if>
+        </where>
+
+        order by sc.score
+        <choose>
+            <when test="order == 0">asc</when>
+            <when test="order == 1">desc</when>
+        </choose>
+        limit #{begin}, #{limit}
+
+    </select>
+
 </mapper>

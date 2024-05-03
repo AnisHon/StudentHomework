@@ -13,6 +13,8 @@ public interface StudentMapper {
      */
     List<Student> selectLimitedStudents(@Param("beg") int beg, @Param("limit") int limit);
 
+    List<Student> selectLimitedStudentsWithCondition(@Param("beg") int beg, @Param("limit") int limit, @Param("search") String search);
+
     @Insert("insert into student(name, gender, age, address, account_id, class_id) values(#{name}, #{gender}, #{age}, #{address}, #{account.id}, #{clazz.id})")
     int insertStudent(Student student);
 
@@ -34,5 +36,7 @@ public interface StudentMapper {
      * 所有学生信息通过student id
      */
     Student selectStudentById(int id);
+
+
 
 }

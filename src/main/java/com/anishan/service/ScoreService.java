@@ -17,9 +17,12 @@ public interface ScoreService {
      * 参数千万不能小于等于0
      * 参数千万不能小于等于0
      * 参数千万不能小于等于0
-     * @param page 当前页码
+     *
+     * @param page  当前页码
+     * @param name 查询的名字
+     * @param order 查询的顺序
      */
-    List<Score> getPagedScore(int page);
+    List<Score> getPagedScore(int page, String name, Integer order);
 
     /**
      * 添加一条score

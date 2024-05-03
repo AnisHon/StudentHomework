@@ -11,9 +11,12 @@ import jakarta.annotation.Resource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TeacherServiceImpl implements TeacherService {
 
+    private final int PAGE_SIZE = 10;
     @Resource
     TeacherMapper teacherMapper;
     @Resource
@@ -34,6 +37,16 @@ public class TeacherServiceImpl implements TeacherService {
         int i = teacherMapper.insertTeacher(teacher);
         return i >= 1;
     }
+
+    @Override
+    public List<Teacher> getPagedTeacherInfo(int page, String search) {
+        search = search == null ? "" : search;
+        int index = (page - 1) * PAGE_SIZE;
+
+        return teacherMapper.selectLimitedTeacherLikeSearch(index, PAGE_SIZE, search);
+    }
+
+
 
 
 
