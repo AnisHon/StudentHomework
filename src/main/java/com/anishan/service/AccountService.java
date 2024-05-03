@@ -12,4 +12,6 @@ public interface AccountService {
     boolean changePassword(String username, String newPassword);
 
     boolean changePasswordByEmail(String email, String newPassword);
+
+    String getRoleByUsername(String username);
 }

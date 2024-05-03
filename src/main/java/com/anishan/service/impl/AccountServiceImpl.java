@@ -1,9 +1,14 @@
 package com.anishan.service.impl;
 
 import com.anishan.entity.Account;
+import com.anishan.entity.RestfulEntity;
+import com.anishan.entity.Teacher;
 import com.anishan.mapper.AccountMapper;
+import com.anishan.mapper.TeacherMapper;
 import com.anishan.service.AccountService;
+import com.anishan.tool.EnumRole;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +21,8 @@ public class AccountServiceImpl implements AccountService {
     PasswordEncoder encoder;
     @Resource
     AccountMapper accountMapper;
-
+    @Resource
+    private TeacherMapper teacherMapper;
 
 
     @Override
@@ -42,6 +48,11 @@ public class AccountServiceImpl implements AccountService {
     public boolean changePasswordByEmail(String email, String newPassword) {
         int i = accountMapper.updatePasswordByEmail(email, encoder.encode(newPassword));
         return i >= 1;
+    }
+
+    @Override
+    public String getRoleByUsername(String username) {
+        return username == null ? null : accountMapper.selectRoleByUsername(username);
     }
 
 

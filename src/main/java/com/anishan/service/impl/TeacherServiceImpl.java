@@ -46,8 +46,10 @@ public class TeacherServiceImpl implements TeacherService {
         return teacherMapper.selectLimitedTeacherLikeSearch(index, PAGE_SIZE, search);
     }
 
-
-
+    @Override
+    public Teacher getTeacherByUsername(String username) {
+        return teacherMapper.selectTeacherByUsername(username);
+    }
 
 
 }

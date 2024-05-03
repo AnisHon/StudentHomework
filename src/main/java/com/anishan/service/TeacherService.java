@@ -15,4 +15,6 @@ public interface TeacherService extends HumanResourceService<Teacher>{
     boolean addTeacher(Account account, Teacher teacher) throws ConflictExcption;
 
     List<Teacher> getPagedTeacherInfo(int page, String search);
+
+    Teacher getTeacherByUsername(String username);
 }

@@ -29,5 +29,6 @@ public interface AccountMapper {
     @Delete("delete from account where id = #{id}")
     int deleteAccountById(int id);
 
-
+    @Select("select role from account where username = #{username}")
+    String selectRoleByUsername(String username);
 }

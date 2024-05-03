@@ -107,7 +107,6 @@ public class StudentController {
     public String getMyStudentInfo(Authentication authentication) {
         String username = authentication.getName();
         Student student = studentService.getStudentByUsername(username);
-        System.out.println(student);
         return RestfulEntity.successMessage("success", student).toJson();
     }
 }

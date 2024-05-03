@@ -18,4 +18,7 @@ public interface TeacherMapper {
     int insertTeacher(Teacher teacher);
 
     List<Teacher> selectLimitedTeacherLikeSearch(@Param("begin") int begin, @Param("limit") int limit, @Param("search") String search);
+
+    @Select("select teacher.id as id, name, gender from teacher left join account a on a.id = teacher.account_id where username = #{username}")
+    Teacher selectTeacherByUsername(String username);
 }

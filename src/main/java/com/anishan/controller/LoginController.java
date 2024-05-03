@@ -1,14 +1,20 @@
 package com.anishan.controller;
 
+import com.alibaba.fastjson2.JSON;
+import com.anishan.entity.Account;
 import com.anishan.entity.RestfulEntity;
-import com.anishan.service.AccountService;
-import com.anishan.service.EmailService;
-import com.anishan.service.LoginService;
+import com.anishan.entity.Student;
+import com.anishan.entity.Teacher;
+import com.anishan.service.*;
+import com.anishan.service.impl.StudentServiceImpl;
+import com.anishan.tool.EnumRole;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,13 +25,17 @@ public class LoginController {
 
 
     @Resource
-    LoginService loginService;
+    private LoginService loginService;
 
     @Resource
-    EmailService emailService;
+    private EmailService emailService;
 
     @Resource
-    AccountService accountService;
+    private AccountService accountService;
+    @Resource
+    private TeacherService teacherService;
+    @Autowired
+    private StudentService studentService;
 
     /**
      * 图形验证码
@@ -81,6 +91,44 @@ public class LoginController {
         }
         b = accountService.changePasswordByEmail(email ,password);
         return RestfulEntity.boolMessage(b, "success", 400, "出现错误未更改").toJson();
+    }
+
+    @ResponseBody
+    @RequestMapping("/user/me")
+    public String getMyselfTeacher(Authentication authentication) {
+        if (authentication == null) {
+            return RestfulEntity.successMessage("匿名用户", null).toJson();
+        }
+
+        String username = authentication.getName();
+
+        String role = accountService.getRoleByUsername(username);
+        Account account = new Account().setRole(role).setUsername(username);
+
+        RestfulEntity<?> entity;
+
+        switch (role) {
+            case EnumRole.TEACHER:
+                Teacher teacher = teacherService.getTeacherByUsername(username);
+                teacher.setAccount(account);
+                entity = RestfulEntity.successMessage(
+                        "success", teacher);
+                break;
+            case EnumRole.ADMIN:
+                entity = RestfulEntity.successMessage(
+                        "success", account);
+                break;
+            case EnumRole.STUDENT:
+            case EnumRole.STUDENT_REPRESENTATIVE:
+                Student student = studentService.getStudentByUsername(username);
+                student.setAccount(account);
+                entity = RestfulEntity.successMessage(
+                        "success", student);
+                break;
+            default:
+                entity = RestfulEntity.failMessage(500, "未知角色");
+        }
+        return entity.toJsonWithoutNull();
     }
 
 }

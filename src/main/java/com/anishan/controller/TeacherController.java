@@ -5,6 +5,7 @@ import com.anishan.service.TeacherService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,5 +44,12 @@ public class TeacherController {
         return RestfulEntity.successMessage("success", teachers).toJsonWithoutNull();
     }
 
+    @ResponseBody
+    @GetMapping("/teacher/me")
+    public String getMyselfTeacher(Authentication authentication) {
+        String username = authentication.getName();
+        Teacher teacher = teacherService.getTeacherByUsername(username);
+        return RestfulEntity.successMessage("success", teacher).toJson();
+    }
 
 }
