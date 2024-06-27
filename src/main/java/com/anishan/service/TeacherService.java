@@ -17,4 +17,8 @@ public interface TeacherService extends HumanResourceService<Teacher>{
     List<Teacher> getPagedTeacherInfo(int page, String search);
 
     Teacher getTeacherByUsername(String username);
+
+    void deleteTeacherById(Integer id);
+
+    Teacher getTeacherById(int id);
 }

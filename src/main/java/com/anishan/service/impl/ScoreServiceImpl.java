@@ -69,4 +69,10 @@ public class ScoreServiceImpl implements ScoreService {
         return i != 0;
     }
 
+    @Override
+    public boolean updateScore(int id, int score) {
+        int i = scoreMapper.updateScore(new Score().setId(id).setScore(score));
+        return i != 0;
+    }
+
 }

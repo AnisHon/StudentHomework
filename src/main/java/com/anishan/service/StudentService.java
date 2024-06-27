@@ -24,6 +24,8 @@ public interface StudentService extends HumanResourceService<Student>{
      */
 
     boolean addStudent(Account account, Student student, int classId) throws ConflictExcption;
+
+    boolean addRepresentiveStudent(Account account, Student student, int classId) throws ConflictExcption;
     /**
      * 分页查询且只查询学生信息（只有student表和class表）
      *
@@ -50,4 +52,6 @@ public interface StudentService extends HumanResourceService<Student>{
 
 
     Student getStudentById(int studentId);
+
+    List<Student> getStudentByName(String name);
 }

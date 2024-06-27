@@ -3,11 +3,13 @@ package com.anishan.service.impl;
 import com.anishan.entity.Account;
 import com.anishan.entity.Teacher;
 import com.anishan.exception.ConflictExcption;
+import com.anishan.mapper.AccountMapper;
 import com.anishan.mapper.TeacherMapper;
 import com.anishan.service.AccountService;
 import com.anishan.service.TeacherService;
 import com.anishan.tool.EnumRole;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ public class TeacherServiceImpl implements TeacherService {
     TeacherMapper teacherMapper;
     @Resource
     AccountService accountService;
+    @Autowired
+    private AccountMapper accountMapper;
 
     public boolean addTeacher(Account account, Teacher teacher) throws ConflictExcption {
         account.setRole(EnumRole.TEACHER);
@@ -49,6 +53,18 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public Teacher getTeacherByUsername(String username) {
         return teacherMapper.selectTeacherByUsername(username);
+    }
+
+    @Override
+    public void deleteTeacherById(Integer id) {
+        int accountId = teacherMapper.selectTeacherAccountIdById(id);
+        teacherMapper.deleteTeacherById(id);
+        accountMapper.deleteAccountById(accountId);
+    }
+
+    @Override
+    public Teacher getTeacherById(int id) {
+        return teacherMapper.selectTeacherById(id);
     }
 
 

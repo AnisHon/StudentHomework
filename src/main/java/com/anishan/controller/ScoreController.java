@@ -1,28 +1,36 @@
 package com.anishan.controller;
 
-import com.anishan.entity.RestfulEntity;
-import com.anishan.entity.Score;
-import com.anishan.entity.Student;
-import com.anishan.entity.Subject;
+import com.anishan.entity.*;
 import com.anishan.exception.ConflictExcption;
 import com.anishan.service.ScoreService;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+@RestController
 public class ScoreController {
 
     @Resource
     ScoreService scoreService;
 
-    @ResponseBody
-    @GetMapping("/teacher/scores/{page}")
+    @PostMapping(value = "/teacher/change-score", produces = "application/json")
+    public String changeScore(
+            @NotNull(message = "id必填")
+            Integer id,
+            @Max(value = 100, message = "分数不得超过100分（100 * 100）")
+            @Min(value = 0, message = "分数不得低于0")
+            Double score
+    ) {
+        boolean b = scoreService.updateScore(id, (int)(score * 100));
+        return RestfulEntity.boolMessage(b, "success", 400, "失败").toJson();
+    }
+
+    @GetMapping(value = "/teacher/scores/{page}", produces = "application/json")
     public String getScores(
             @Min(value = 1, message = "页码不能小于1")
             @PathVariable
@@ -31,21 +39,23 @@ public class ScoreController {
             String search
     ) {
         List<Score> pagedScore = scoreService.getPagedScore(page, search, order);
-        return RestfulEntity.successMessage("success", pagedScore).toJsonWithoutNull();
+        List<DoubleScore> doubleScores = new ArrayList<>();
+        for (Score score : pagedScore) {
+            doubleScores.add(new DoubleScore(score));
+        }
+        return RestfulEntity.successMessage("success", doubleScores).toJsonWithoutNull();
     }
 
-    @ResponseBody
     @PostMapping("/teacher/add-score")
     public String addScore(
             @NotNull Integer subject_id,
             @NotNull Integer student_id,
-            @Max(value = 10000, message = "分数不得超过100分（100 * 100）")
+            @Max(value = 100, message = "分数不得超过100分（100 * 100）")
             @Min(value = 0, message = "分数不得低于0")
-            @NotNull
-            Integer score
+            Double score
     ) {
         Score scoreParam = new Score()
-                .setScore(score)
+                .setScore((int)(score * 100))
                 .setStudent(new Student().setId(student_id))
                 .setSubject(new Subject().setId(subject_id));
 
@@ -60,7 +70,6 @@ public class ScoreController {
     }
 
 
-    @ResponseBody
     @GetMapping("/teacher/remove-score/{id}")
     public String deleteScore(@PathVariable Integer id) {
         boolean b = scoreService.removeScore(id);

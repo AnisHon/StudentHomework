@@ -1,5 +1,8 @@
 package com.anishan.service;
 
+import com.anishan.entity.RestfulEntity;
+import org.springframework.security.core.Authentication;
+
 public interface LoginService {
 
 
@@ -9,5 +12,6 @@ public interface LoginService {
 
     boolean validateCode(String uuid, String code);
 
+    RestfulEntity<?> getMe(Authentication authentication);
 
 }

@@ -5,9 +5,14 @@ import com.anishan.service.EmailService;
 import com.anishan.tool.EmailSender;
 import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -18,6 +23,7 @@ public class EmailServiceImpl implements EmailService {
     StringRedisTemplate stringRedisTemplate;
     @Resource
     AccountMapper accountMapper;
+
 
     private static final int SECOUND_TIME_OUT = 60;
     private static final int LENTH = 6;
@@ -32,6 +38,7 @@ public class EmailServiceImpl implements EmailService {
     private String resendKey(String sessionId) {
         return "user:" + sessionId + ":resend";
     }
+    private static Lock lock = new ReentrantLock();
 
     /**
      * 该方法只负责发送验证码和阻止重复发送验证码
@@ -46,20 +53,23 @@ public class EmailServiceImpl implements EmailService {
      */
     public boolean sendEmailVerificationCode(String email, String sessionId, String subject) {
         String resendKey = resendKey(sessionId);
-        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(resendKey))) {
-            return false;
-        }
-
-
-
         String emailKey = getEmailKey(sessionId);
         String codeKey = getCodeKey(email);
 
-        String code = codeSender.sendCode(email, subject, LENTH);
-
+        lock.lock();;
+        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(resendKey))
+                || Boolean.TRUE.equals(stringRedisTemplate.hasKey(codeKey))
+        ) {
+            lock.unlock();
+            return false;
+        }
+        String code = codeSender.getCode(LENTH);
         stringRedisTemplate.opsForValue().set(resendKey, "1", SECOUND_TIME_OUT, TimeUnit.SECONDS);
         stringRedisTemplate.opsForValue().set(emailKey, email, 2 * SECOUND_TIME_OUT, TimeUnit.SECONDS);
         stringRedisTemplate.opsForValue().set(codeKey, code, 2 * SECOUND_TIME_OUT, TimeUnit.SECONDS);
+
+        codeSender.sendMessage(email, subject, "重置验证码:" + code);
+        lock.unlock();
         return true;
     }
 

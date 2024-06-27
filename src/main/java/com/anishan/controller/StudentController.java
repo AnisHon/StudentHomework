@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@ResponseBody
 @Controller
 public class StudentController {
 
@@ -21,12 +22,17 @@ public class StudentController {
     StudentService studentService;
 
 
+    @GetMapping(value = "/teacher/search-student/{name}", produces = "application/json")
+    public String searchStudent(@PathVariable String name ) {
+        List<Student> students = studentService.getStudentByName(name);
+        return RestfulEntity.successMessage("success", students).toJsonWithoutNull();
+    }
+
     /**
-     * 获得多个学生信息（student + class）
+     * 获得多个学生信息（student + class + username）
      * @param page 页码
      */
-    @GetMapping("/teacher/students/{page}")
-    @ResponseBody
+    @GetMapping(value = "/teacher/students/{page}", produces = "application/json")
     public String getStudents(
             @Min(value = 1, message = "页号从1开始")
             @PathVariable
@@ -42,15 +48,13 @@ public class StudentController {
      * 查询单个学生信息
      * @param id 学生ID
      */
-    @GetMapping("/teacher/student/{id}")
-    @ResponseBody
+    @GetMapping(value = "/teacher/student/{id}", produces = "application/json")
     public String getStudent(
             @PathVariable
             Integer id
     ) {
         Student student = studentService.getStudentById(id);
-
-        boolean b = student == null;
+        boolean b = (student != null);
         return RestfulEntity.boolMessage(b, "success", student, 404, "ID不存在").toJson();
     }
 
@@ -67,12 +71,11 @@ public class StudentController {
      * @param classId 班级ID
      * @return 错误信息JSON或成功信息
      */
-    @ResponseBody
-    @PostMapping("/admin/add-student")
+    @PostMapping(value = "/admin/add-student", produces = "application/json")
     public String addStudent(
             @Valid ParamAccount paramAccount,
             @Valid ParamStudent paramStudent,
-            @NotNull Integer classId
+            @NotNull(message = "必须有班级ID") Integer classId
     ) {
         Account account = new Account(paramAccount);
         Student student = new Student(paramStudent);
@@ -91,8 +94,7 @@ public class StudentController {
     }
 
 
-    @ResponseBody
-    @GetMapping("/admin/delete-student/{id}")
+    @GetMapping(value = "/admin/delete-student/{id}", produces = "application/json")
     public String deleteStudent(@PathVariable Integer id) {
         boolean b = studentService.deleteStudent(id);
         return RestfulEntity.boolMessage(b, "success", 404, "ID不存在").toJson();
@@ -102,11 +104,13 @@ public class StudentController {
     /**
      * 获得学生个人信息（所有）
      */
-    @ResponseBody
-    @GetMapping("/student/me")
+    @GetMapping(value = "/student/me", produces = "application/json")
     public String getMyStudentInfo(Authentication authentication) {
         String username = authentication.getName();
         Student student = studentService.getStudentByUsername(username);
         return RestfulEntity.successMessage("success", student).toJson();
     }
+
+
+
 }

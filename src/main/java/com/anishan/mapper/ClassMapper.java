@@ -22,4 +22,5 @@ public interface ClassMapper {
 
     @Select("select * from class where name like concat('%', #{search}, '%') limit #{begin}, #{limit}")
     List<Clazz> selectLimitedClassNameLikeSearch(@Param("begin") int begin, @Param("limit") int limit, @Param("search") String search);
+
 }

@@ -8,6 +8,9 @@
     <resultMap id="StudentClassMapping" type="student">
         <id column="sid" property="id"/>
         <result column="sname" property="name"/>
+        <association property="account">
+            <result column="username" property="username"/>
+        </association>
         <association property="clazz">
             <id column="cid" property="id"/>
             <result column="cname" property="name"/>
@@ -21,10 +24,13 @@
             s.name as sname,
             age, gender, address,
             c.id as cid,
-            c.name as cname
+            c.name as cname,
+            a.username as username
         from student s
         left join class c
             on s.class_id = c.id
+        left join account a
+            on a.id = s.account_id
         limit #{beg}, #{limit}
     </select>
 
@@ -35,6 +41,7 @@
         <association property="account">
             <id column="account_id" property="id"/>
             <result column="username" property="username"/>
+            <result column="email" property="email"/>
         </association>
         <association property="clazz">
             <id column="class_id" property="id"/>
@@ -53,14 +60,14 @@
     <select id="selectStudentByUsername" resultMap="StudentMapping" >
         select
             a.id as account_id,
-            username,
+            username, email,
             stu.id as stu_id,
             stu.name as stu_name,
             gender, age, address,
             c.id as class_id,
             c.name as class_name,
             sc.id as score_id,
-            sc.score as score,
+            sc.score / 100.0 as score,
             su.id as subject_id,
             su.name as subject_name
 
@@ -81,7 +88,7 @@
     <select id="selectStudentById" resultMap="StudentMapping" >
         select
             a.id as account_id,
-            username,
+            username, email,
             stu.id as stu_id,
             stu.name as stu_name,
             gender, age, address,
@@ -91,7 +98,6 @@
             sc.score as score,
             su.id as subject_id,
             su.name as subject_name
-
         from account a
                  right join student stu
                             on a.id = stu.account_id
@@ -112,7 +118,8 @@
             s.name as sname,
             age, gender, address,
             c.id as cid,
-            c.name as cname
+            c.name as cname,
+            a.username as username
         from student s
         left join class c
             on s.class_id = c.id

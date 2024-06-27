@@ -1,6 +1,4 @@
 package com.anishan;
-
-import com.wf.captcha.SpecCaptcha;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

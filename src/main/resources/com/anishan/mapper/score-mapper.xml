@@ -11,6 +11,9 @@
         <association property="student">
             <id column="student_id" property="id"/>
             <result column="student_name" property="name"/>
+            <association property="account">
+                <result column="username" property="username"/>
+            </association>
         </association>
         <association property="subject">
             <id column="subject_id" property="id"/>
@@ -67,6 +70,8 @@
                 ac.username like concat('%', #{search}, '%')
                 or
                 stu.name like concat('%', #{search}, '%')
+                or
+                sub.name like concat('%', #{search}, '%')
             </if>
         </where>
 

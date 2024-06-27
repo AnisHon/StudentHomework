@@ -32,4 +32,6 @@ public interface ScoreService {
 
 
     boolean removeScore(int id);
+
+    boolean updateScore(int id, int score);
 }

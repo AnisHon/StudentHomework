@@ -37,6 +37,7 @@ public interface StudentMapper {
      */
     Student selectStudentById(int id);
 
-
-
+    @ResultMap("StudentClassMapping")
+    @Select("select stu.id as sid, name as sname, username from student stu left join account ac on stu.account_id = ac.id where name like concat('%', #{name}, '%') or username like concat('%', #{name}, '%') limit 0, 10")
+    List<Student> selectStudentLikeName(String name);
 }

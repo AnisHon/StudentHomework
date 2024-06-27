@@ -4,6 +4,9 @@ mybatis:
   configuration:
     auto-mapping-behavior: full
 spring:
+  main:
+    allow-circular-references: true
+
   application:
     name: LoginHomWork
 
@@ -16,8 +19,12 @@ spring:
   data:
     redis:
       database: 0
+      jedis:
+        pool:
+          enabled: true
 
   mail:
     host: smtp.163.com
     username: a13920111@163.com
     password: VJCOHSABXQGYOMXS
+

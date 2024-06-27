@@ -86,4 +86,9 @@ public class ResourceAssignmentServiceImpl implements ResourceAssignmentService 
     public List<Subject> selectSubjectsByName(String subjectName) {
         return subjectMapper.selectSubjectNameLikeSearch(subjectName);
     }
+
+    @Override
+    public List<Clazz> selectClassByName(String className) {
+        return classMapper.selectLimitedClassNameLikeSearch(0, 10, className);
+    }
 }

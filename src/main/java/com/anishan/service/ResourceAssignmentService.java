@@ -24,4 +24,7 @@ public interface ResourceAssignmentService {
     boolean deleteSubjectById(int id);
 
     List<Subject> selectSubjectsByName(String subjectName);
+
+
+    List<Clazz> selectClassByName(String className);
 }
